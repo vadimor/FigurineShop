@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  catalog.api:
+    container_name: lde.catalog.api
+    build:
+      context: .
+      dockerfile: Catalog/Dockerfile
+    environment:
+       - ASPNETCORE_ENVIRONMENT=Development
+       - ASPNETCORE_URLS=http://+:5000
+       - ConnectionString=server=www.figurineshop.com;port=5433;database=catalog;uid=postgres;password=postgres;
+       - PathBase=http://www.figurineshop.com:5000
+    depends_on:
+      - postgres
+    ports:
+      - 5000:5000
+  web.mvc:
+    container_name: lde.web.mvc
+    build:
+      context: .
+      dockerfile: MVC/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5001
+      - CatalogUrl=http://www.figurineshop.com:5000/api/v1/catalogbff
+      - Authorization__Authority=http://www.figurineshop.com:5002
+      - IdentityUrl=http://www.figurineshop.com:5002
+      - CallBackUrl=http://www.figurineshop.com/
+      - RedirectUri=http://www.figurineshop.com/signin-oidc
+    depends_on:
+      - catalog.api
+    ports:
+      - 5001:5001
+  nginx:
+    image: nginx
+    container_name: lde.nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./Proxy/gateway/nginx/conf.d:/etc/nginx/conf.d
+      - ./Proxy/assets:/var/www/assets
+  postgres:
+    image: postgres
+    container_name: lde.postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5433:5432
+networks:
+  default:
+    driver: bridge
+    internal: false
+    attachable: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.0/24
+          gateway: 192.168.0.1
