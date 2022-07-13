@@ -21,6 +21,13 @@ namespace Catalog.Services
             _repository = catalogItemService;
         }
 
+        public async Task<CatalogItemDto?> GetItemAsync(int id)
+        {
+            var result = await _repository.GetItem(id);
+
+            return _mapper.Map<CatalogItemDto>(result);
+        }
+
         public async Task<CatalogItemDto> AddAsync(string name, decimal price, int weight, double size, int catalogMaterialId, int catalogSourceId, string pictureFileName, int availableStock)
         {
             return await ExecuteSafeAsync(async () =>

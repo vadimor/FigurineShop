@@ -22,10 +22,17 @@ namespace Catalog.Services
             _mapper = mapper;
             _repository = repository;
         }
+
         public async Task<PaginatedItemsResponse<CatalogItemDto>?> GetCatalogItemsAsync(int pageSize, int pageIndex, Dictionary<CatalogTypeFilter, int>? filters)
         {
             int? materialFilter = null;
             int? sourceFilter = null;
+            int? priceMinFilter = null;
+            int? priceMaxFilter = null;
+            int? weightMinFilter = null;
+            int? weightMaxFilter = null;
+            int? sizeMinFilter = null;
+            int? sizeMaxFilter = null;
 
             if (filters != null)
             {
@@ -38,9 +45,41 @@ namespace Catalog.Services
                 {
                     sourceFilter = source;
                 }
+                
+                if (filters.TryGetValue(CatalogTypeFilter.PriceMin, out var priceMin))
+                {
+                    priceMinFilter = priceMin;
+                }
+                
+                if (filters.TryGetValue(CatalogTypeFilter.PriceMax, out var priceMax))
+                {
+                    priceMaxFilter = priceMax;
+                }
+
+                if (filters.TryGetValue(CatalogTypeFilter.WeightMin, out var weightMin))
+                {
+                    weightMinFilter = weightMin;
+                }
+
+                if (filters.TryGetValue(CatalogTypeFilter.WeightMax, out var weightMax))
+                {
+                    weightMaxFilter = weightMax;
+                }
+                
+                if (filters.TryGetValue(CatalogTypeFilter.SizeMin, out var sizeMin))
+                {
+                    sizeMinFilter = sizeMin;
+                }
+
+                if (filters.TryGetValue(CatalogTypeFilter.SizeMax, out var sizeMax))
+                {
+                    sizeMaxFilter = sizeMax;
+                }
             }
 
-            var page = await _repository.GetByPageAsync(pageIndex, pageSize, materialFilter, sourceFilter, 0,0,0,0,0,0);
+            var page = await _repository.GetByPageAsync(
+                pageIndex, pageSize, materialFilter, sourceFilter, priceMinFilter, priceMaxFilter, weightMinFilter, weightMaxFilter, sizeMinFilter, sizeMaxFilter);
+            
             if (page == null)
             {
                 return null;

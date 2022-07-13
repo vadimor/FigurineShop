@@ -1,4 +1,4 @@
-/* using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using MVC.Services;
 using MVC.Services.Interfaces;
 using MVC.ViewModels;
@@ -42,4 +42,3 @@ public class AccountController : Controller
             new AuthenticationProperties { RedirectUri = homeUrl });
     }
 }
-*/

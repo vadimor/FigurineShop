@@ -1,4 +1,4 @@
-/* using MVC.Services.Interfaces;
+using MVC.Services.Interfaces;
 using MVC.ViewModels;
 
 namespace MVC.Services;
@@ -33,4 +33,4 @@ public class IdentityParser : IIdentityParser<ApplicationUser>
         }
         throw new ArgumentException(message: "The principal must be a ClaimsPrincipal", paramName: nameof(principal));
     }
-} */
+}

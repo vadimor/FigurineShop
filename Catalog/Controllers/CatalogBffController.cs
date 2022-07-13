@@ -17,26 +17,39 @@ public class CatalogBffController : ControllerBase
 {
     private readonly ILogger<CatalogBffController> _logger;
     private readonly ICatalogService _catalogService;
+    private readonly ICatalogItemService _catalogItemService;
     private readonly IOptions<CatalogConfig> _config;
     private readonly ICatalogMaterialService _catalogMaterialService;
     private readonly ICatalogSourceService _catalogSourceService;
 
     public CatalogBffController(
         ILogger<CatalogBffController> logger,
-        ICatalogService catalogService,
         IOptions<CatalogConfig> config,
+        ICatalogService catalogService,
+        ICatalogItemService catalogItemService,
         ICatalogMaterialService catalogMaterialService,
         ICatalogSourceService catalogSourceService)
     {
         _logger = logger;
-        _catalogService = catalogService;
         _config = config;
+        _catalogService = catalogService;
+        _catalogItemService = catalogItemService;
         _catalogMaterialService = catalogMaterialService;
         _catalogSourceService = catalogSourceService;
     }
 
     [HttpPost]
+    // [AllowAnonymous]
+    [ProducesResponseType(typeof(CatalogItemDto), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetItem(GetItemRequest request)
+    {
+        _logger.LogInformation($"Start Get Item {request.Id}");
+        var result = await _catalogItemService.GetItemAsync(request.Id);
+        _logger.LogInformation($"End Get Item {result.Name}");
+        return Ok(result);
+    }
 
+    [HttpPost]
     // [AllowAnonymous]
     [ProducesResponseType(typeof(PaginatedItemsResponse<CatalogItemDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Items(PaginatedItemsRequest<CatalogTypeFilter> request)

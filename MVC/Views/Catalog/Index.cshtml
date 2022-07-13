@@ -13,11 +13,34 @@
         <div class="container">
            <form asp-action="Index" asp-controller="Catalog" method="post">
             <label>
+                Material:
                 <select asp-for="@Model.MaterialFilterApplied" asp-items="@Model.Materials"></select>
             </label>
             <label>
+                Source
                 <select asp-for="@Model.SourceFilterApplied" asp-items="@Model.Sources"></select>
             </label>
+            <label>
+                Price
+                <br />
+                <input style="width: 45%;" min="0" asp-for="@Model.PriceMinFilterApplied" type="number"></input>
+                <input style="width: 45%;" min="0" asp-for="@Model.PriceMaxFilterApplied" type="number"></input>
+            </label>
+
+            <label>
+                Weight
+                <br />
+                <input style="width: 45%;" min="0" asp-for="@Model.WeightMinFilterApplied" type="number"></input>
+                <input style="width: 45%;" min="0" asp-for="@Model.WeightMaxFilterApplied" type="number"></input>
+            </label>
+
+            <label>
+                Size
+                <br />
+                <input style="width: 45%;" min="0" asp-for="@Model.SizeMinFilterApplied" type="number"></input>
+                <input style="width: 45%;" min="0" asp-for="@Model.SizeMaxFilterApplied" type="number"></input>
+            </label>
+
             <br />
             <br />
             <br />
@@ -44,9 +67,9 @@
                 <div class="esh-catalog-items row">
                     @foreach (var catalogItem in Model.CatalogItems)
                         {
-                    <div class="esh-catalog-item col-md-4">
+                        <div class="esh-catalog-item col-md-4">
                         <partial name="_product" model="catalogItem" />
-                    </div>
+                        </div>
                         }
                 </div>
 

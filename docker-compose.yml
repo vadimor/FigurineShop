@@ -1,7 +1,23 @@
 version: '3.8'
 
 services:
-  catalog.api:
+   basket.api:
+    container_name: lde.basket.api
+    build:
+      context: .
+      dockerfile: Basket/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5003
+      - Authorization__Authority=http://www.figurineshop.com:5002
+      - Redis__Host=www.figurineshop.com:6380
+      - Redis__CacheTimeout=01:00:00
+      - PathBase=http://www.figurineshop.com:5003
+    depends_on:
+      - redis
+    ports:
+      - 5003:5003
+   catalog.api:
     container_name: lde.catalog.api
     build:
       context: .
@@ -10,12 +26,13 @@ services:
        - ASPNETCORE_ENVIRONMENT=Development
        - ASPNETCORE_URLS=http://+:5000
        - ConnectionString=server=www.figurineshop.com;port=5433;database=catalog;uid=postgres;password=postgres;
+       - Authorization__Authority=http://www.figurineshop.com:5002
        - PathBase=http://www.figurineshop.com:5000
     depends_on:
       - postgres
     ports:
       - 5000:5000
-  web.mvc:
+   web.mvc:
     container_name: lde.web.mvc
     build:
       context: .
@@ -23,6 +40,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5001
+      - BasketUrl=http://www.figurineshop.com:5003/api/v1/basketbff
       - CatalogUrl=http://www.figurineshop.com:5000/api/v1/catalogbff
       - Authorization__Authority=http://www.figurineshop.com:5002
       - IdentityUrl=http://www.figurineshop.com:5002
@@ -30,9 +48,10 @@ services:
       - RedirectUri=http://www.figurineshop.com/signin-oidc
     depends_on:
       - catalog.api
+      - identityserver
     ports:
       - 5001:5001
-  nginx:
+   nginx:
     image: nginx
     container_name: lde.nginx
     ports:
@@ -40,13 +59,31 @@ services:
     volumes:
       - ./Proxy/gateway/nginx/conf.d:/etc/nginx/conf.d
       - ./Proxy/assets:/var/www/assets
-  postgres:
+   postgres:
     image: postgres
     container_name: lde.postgres
     environment:
       POSTGRES_PASSWORD: postgres
     ports:
       - 5433:5432
+   identityserver:
+    container_name: lde.identityserver
+    build:
+      context: .
+      dockerfile: IdentityServer/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5002
+      - MvcUrl=http://www.figurineshop.com
+      - CatalogApi=http://www.figurineshop.com:5000
+      - BasketApi=http://www.figurineshop.com:5003
+    ports:
+      - 5002:5002
+   redis:
+    image: redis
+    container_name: lde.redis
+    ports:
+      - 6380:6379
 networks:
   default:
     driver: bridge

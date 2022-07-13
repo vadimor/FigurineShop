@@ -1,6 +1,7 @@
 ﻿using Catalog.Data;
 using Catalog.Data.Entities;
 using Catalog.Repositories.Interfaces;
+using System.Linq;
 
 namespace Catalog.Repositories
 {
@@ -61,6 +62,16 @@ namespace Catalog.Repositories
                .ToListAsync();
 
             return new PaginatedItems<CatalogItem>() { TotalCount = totalItems, Data = itemsOnPage };
+        }
+
+        public async Task<CatalogItem?> GetItem(int id)
+        {
+            var result = await _dbContext.CatalogItems
+                .Include(x => x.Material)
+                .Include(x => x.Source)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            return result;
         }
 
         public async Task<ItemsList<CatalogItem>> GetItemsAsync()

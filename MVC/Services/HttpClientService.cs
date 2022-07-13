@@ -1,4 +1,4 @@
-// using IdentityModel.Client;
+using IdentityModel.Client;
 // using Infrastructure.Configuration;
 using MVC.Services.Interfaces;
 using Newtonsoft.Json;
@@ -23,11 +23,11 @@ public class HttpClientService : IHttpClientService
     {
         var client = _clientFactory.CreateClient();
 
-        /* var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+        var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
         if (!string.IsNullOrEmpty(token))
         {
             client.SetBearerToken(token);
-        } */
+        }
 
         var httpMessage = new HttpRequestMessage();
         httpMessage.RequestUri = new Uri(url);

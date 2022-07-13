@@ -1,4 +1,4 @@
-﻿namespace MVC.Models.Requests
+﻿namespace MVC.Models.Response
 {
     public class ItemsListResponse<T>
     {

@@ -2,6 +2,7 @@
 using MVC.Dtos;
 using MVC.Models.Enums;
 using MVC.Models.Requests;
+using MVC.Models.Response;
 using MVC.Services.Interfaces;
 using MVC.ViewModels;
 
@@ -20,7 +21,7 @@ public class CatalogService : ICatalogService
         _logger = logger;
     }
 
-    public async Task<Catalog> GetCatalogItems(int page, int take, int? material, int? source)
+    public async Task<Catalog> GetCatalogItems(int page, int take, int? material, int? source, int? priceMin, int? priceMax, int? weightMin, int? weightMax, int? sizeMin, int? sizeMax)
     {
         var filters = new Dictionary<CatalogTypeFilter, int>();
 
@@ -28,20 +29,50 @@ public class CatalogService : ICatalogService
         {
             filters.Add(CatalogTypeFilter.Material, material.Value);
         }
-        
+
         if (source.HasValue)
         {
             filters.Add(CatalogTypeFilter.Source, source.Value);
         }
         
+        if (priceMin.HasValue)
+        {
+            filters.Add(CatalogTypeFilter.PriceMin, priceMin.Value);
+        }
+
+        if (priceMax.HasValue)
+        {
+            filters.Add(CatalogTypeFilter.PriceMax, priceMax.Value);
+        }
+
+        if (weightMin.HasValue)
+        {
+            filters.Add(CatalogTypeFilter.WeightMin, weightMin.Value);
+        }
+
+        if (weightMax.HasValue)
+        {
+            filters.Add(CatalogTypeFilter.WeightMax, weightMax.Value);
+        }
+
+        if (sizeMin.HasValue)
+        {
+            filters.Add(CatalogTypeFilter.SizeMin, sizeMin.Value);
+        }
+        
+        if (sizeMax.HasValue)
+        {
+            filters.Add(CatalogTypeFilter.SizeMax, sizeMax.Value);
+        }
+
         var result = await _httpClient.SendAsync<Catalog, PaginatedItemsRequest<CatalogTypeFilter>>($"{_settings.Value.CatalogUrl}/items",
-           HttpMethod.Post, 
+           HttpMethod.Post,
            new PaginatedItemsRequest<CatalogTypeFilter>()
-            {
-                PageIndex = page,
-                PageSize = take,
-                Filters = filters
-            });
+           {
+               PageIndex = page,
+               PageSize = take,
+               Filters = filters
+           });
 
         return result;
     }
@@ -103,5 +134,20 @@ public class CatalogService : ICatalogService
         }
 
         return list;
+    }
+
+
+    public async Task<CatalogItem> GetItem(int id)
+    {
+        var result = await _httpClient.SendAsync<CatalogItem, object?>(
+            $"{_settings.Value.CatalogUrl}/GetItem",
+            HttpMethod.Post,
+            new GetItemRequest
+            {
+                Id = id
+            }
+            );
+
+        return result;
     }
 }

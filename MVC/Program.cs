@@ -1,9 +1,12 @@
-// using System.IdentityModel.Tokens.Jwt;
-// using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-// using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using MVC.Services;
 using MVC.Services.Interfaces;
 using MVC.ViewModels;
+using Infrastructure.Extensions;
+using Infrastructure.Services;
+using Infrastructure.Services.Interfaces;
 
 var config = GetConfiguration();
 
@@ -12,14 +15,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// builder.AddConfiguration(config);
+builder.AddConfiguration();
 
-// var identityUrl = config.GetValue<string>("IdentityUrl");
-// var callBackUrl = config.GetValue<string>("CallBackUrl");
-// var redirectUrl = config.GetValue<string>("RedirectUri");
+var identityUrl = config.GetValue<string>("IdentityUrl");
+var callBackUrl = config.GetValue<string>("CallBackUrl");
+var redirectUrl = config.GetValue<string>("RedirectUri");
 var sessionCookieLifetime = config.GetValue("SessionCookieLifetimeMinutes", 60);
 
-/* builder.Services.AddAuthentication(options =>
+builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = OpenIdConnectDefaults.AuthenticationScheme;
     })
@@ -45,7 +48,8 @@ var sessionCookieLifetime = config.GetValue("SessionCookieLifetimeMinutes", 60);
         options.Scope.Add("profile");
         options.Scope.Add("mvc");
     });
-*/
+
+builder.Services.AddAuthorization(config);
 
 builder.Services.Configure<AppSettings>(config);
 
@@ -53,6 +57,9 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddTransient<IHttpClientService, HttpClientService>();
 builder.Services.AddTransient<ICatalogService, CatalogService>();
+builder.Services.AddTransient<IIdentityParser<ApplicationUser>, IdentityParser>();
+builder.Services.AddTransient<IJsonSerializer, Infrastructure.Services.JsonSerializer>();
+builder.Services.AddTransient<IBasketService, BasketService>();
 
 var app = builder.Build();
 

@@ -2,7 +2,8 @@
 
 
 <form>
-
+    <a asp-controller="Catalog" asp-action="ItemInfoPage"
+    asp-route-id = "@Model.Id">
     <img class="esh-catalog-thumbnail" src="@Model.PictureUrl" />
 
     <div class="esh-catalog-name">
@@ -12,4 +13,5 @@
         <span>@Model.Price.ToString("N2")</span>
     </div>
     <input type="hidden" asp-for="@Model.Id" name="id" />
+    </a>
 </form>

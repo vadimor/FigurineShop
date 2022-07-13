@@ -3,5 +3,11 @@ namespace MVC.Models.Enums;
 public enum CatalogTypeFilter
 {
     Material,
-    Source
+    Source,
+    PriceMin,
+    PriceMax,
+    WeightMin,
+    WeightMax,
+    SizeMin,
+    SizeMax
 }

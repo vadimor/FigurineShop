@@ -1,0 +1,10 @@
+﻿@model MVC.ViewModels.BasketData
+
+@{
+    ViewData["Title"] = "Basket";
+}
+
+@foreach(var item in Model.Data)
+{
+    <p>@item.Key.Name : @item.Value</p>
+}

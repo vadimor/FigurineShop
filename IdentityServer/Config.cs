@@ -31,9 +31,9 @@ namespace IdentityServer
                     Scopes = new List<Scope>
                     {
                         new Scope("catalog.catalogbff"),
-                        new Scope("catalog.catalogbrand"),
                         new Scope("catalog.catalogitem"),
-                        new Scope("catalog.catalogtype"),
+                        new Scope("catalog.catalogmaterial"),
+                        new Scope("catalog.catalogsource"),
                     },
                 }
             };
@@ -69,6 +69,19 @@ namespace IdentityServer
                 },
                 new Client
                 {
+                    ClientId = "basket",
+
+                    // no interactive user, use the clientid/secret for authentication
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+
+                    // secret for authentication
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+                },
+                new Client
+                {
                     ClientId = "catalogswaggerui",
                     ClientName = "Catalog Swagger UI",
                     AllowedGrantTypes = GrantTypes.Implicit,
@@ -79,7 +92,25 @@ namespace IdentityServer
 
                     AllowedScopes =
                     {
-                        "mvc", "catalog.catalogitem"
+                         "mvc",
+                         "catalog.catalogbff","catalog.catalogsource",
+                         "catalog.catalogmaterial", "catalog.catalogitem"
+                    }
+                },
+                new Client
+                {
+                    ClientId = "basketswaggerui",
+                    ClientName = "Basket Swagger UI",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+
+                    RedirectUris = { $"{configuration["BasketApi"]}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{configuration["BasketApi"]}/swagger/" },
+
+                    AllowedScopes =
+                    {
+                         "mvc",
+                         "basket.basketbff"
                     }
                 },
             };

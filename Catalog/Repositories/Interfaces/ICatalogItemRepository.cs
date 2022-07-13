@@ -10,7 +10,8 @@ namespace Catalog.Repositories.Interfaces
             decimal? priceMin, decimal? priceMax, int? weightMin, int? weightMax,
             double? sizeMin, double? sizeMax
             );
-        
+
+        Task<CatalogItem?> GetItem(int id);
         Task<ItemsList<CatalogItem>> GetItemsAsync();
         Task<CatalogItem> AddAsync(string name, decimal price, int weight, double size, int catalogMaterialId, int catalogSourceId, string pictureFileName, int availableStock);
         Task<CatalogItem?> RemoveAsync(int id);

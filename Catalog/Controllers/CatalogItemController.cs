@@ -3,10 +3,14 @@ using Catalog.Models.Dtos;
 using Catalog.Models.Requests;
 using Catalog.Models.Response;
 using Catalog.Services.Interfaces;
+using Infrastructure.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Catalog.Controllers
 {
     [ApiController]
+    [Authorize(Policy = AuthPolicy.AllowClientPolicy)]
+    [Scope("catalog.catalogitem")]
     [Route(ComponentDefaults.DefaultRoute)]
     public class CatalogItemController : Controller
     {

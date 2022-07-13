@@ -6,6 +6,10 @@ using Catalog.Repositories;
 using Catalog.Services.Interfaces;
 using Catalog.Services;
 using Catalog.Data;
+using Infrastructure.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+
+var config = GetConfiguration();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,17 +18,45 @@ builder.Services.AddControllers(
     ).AddJsonOptions(opt => opt.JsonSerializerOptions.WriteIndented = true);
 
 builder.Services.AddSwaggerGen(
-    opt => opt.SwaggerDoc("v1", 
-    new OpenApiInfo
-    {
-        Version = "v1",
-        Title = "FigurineShop-Catalog API",
-        Description = "The Catalog service HTTP API"
-    }
-    ));
+    opt => {
+        opt.SwaggerDoc("v1",
+        new OpenApiInfo
+        {
+            Version = "v1",
+            Title = "FigurineShop-Catalog API",
+            Description = "The Catalog service HTTP API"
+        });
+        var authority = config["Authorization:Authority"];
+        opt.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.OAuth2,
+            Flows = new OpenApiOAuthFlows()
+            {
+                Implicit = new OpenApiOAuthFlow()
+                {
+                    AuthorizationUrl = new Uri($"{authority}/connect/authorize"),
+                    TokenUrl = new Uri($"{authority}/connect/token"),
+                    Scopes = new Dictionary<string, string>()
+                    {
+                        { "mvc", "website" },
+                        { "catalog.catalogitem", "catalog.catalogitem" },
+                        { "catalog.catalogmaterial", "catalog.catalogmaterial" },
+                        { "catalog.catalogsource", "catalog.catalogsource" },
+                        { "catalog.catalogbff", "catalog.catalogbff" }
+                    }
+                }
+            }
+        });
+       
+        opt.OperationFilter<AuthorizeCheckOperationFilter>();
+    });
 
-var config = GetConfiguration();
+
+builder.AddConfiguration();
+
 builder.Services.Configure<CatalogConfig>(config);
+
+builder.Services.AddAuthorization(config);
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -39,28 +71,40 @@ builder.Services.AddTransient<ICatalogMaterialService, CatalogMaterialService>()
 builder.Services.AddDbContextFactory<ApplicationDbContext>(opts => opts.UseNpgsql(config["ConnectionString"]));
 builder.Services.AddScoped<IDbContextWrapper<ApplicationDbContext>, DbContextWrapper<ApplicationDbContext>>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "CorsPolicy",
+        builder => builder
+            .SetIsOriginAllowed((host) => true)
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
+});
+
 var app = builder.Build();
 
 app.UseSwagger()
     .UseSwaggerUI(setup =>
     {
         setup.SwaggerEndpoint($"{config["PathBase"]}/swagger/v1/swagger.json", "Catalog.API V1");
+        setup.OAuthClientId("catalogswaggerui");
+        setup.OAuthAppName("Catalog Swagger UI");
     });
 
-if (!app.Environment.IsDevelopment())
-{
-    
-    app.UseExceptionHandler("/Home/Error");
-}
-
 app.UseRouting();
+app.UseCors("CorsPolicy");
 
-app.UseEndpoints(endpoints =>
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseEndpoints(endPounts =>
 {
-    endpoints.MapDefaultControllerRoute();
-    endpoints.MapControllers();
-});
-// app.UseAuthorization();
+    endPounts.MapDefaultControllerRoute();
+    endPounts.MapControllers();
+}
+);
+
 CreateDbIfNotExists(app);
 app.Run();
 

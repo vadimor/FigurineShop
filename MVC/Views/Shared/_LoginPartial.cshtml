@@ -1,6 +1,6 @@
 @using MVC.Services.Interfaces
 
-@*@inject IIdentityParser<ApplicationUser> UserManager
+@inject IIdentityParser<ApplicationUser> UserManager
 
 @if (Context.User.Identity.IsAuthenticated)
 {
@@ -44,4 +44,4 @@ else
     <section class="col-lg-1 col-xs-12">
 
     </section>
-}*@
+}

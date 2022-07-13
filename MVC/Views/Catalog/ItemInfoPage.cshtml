@@ -1,0 +1,33 @@
+﻿@model MVC.ViewModels.CatalogViewModels.ItemInfoPageViewModel
+
+@{
+    ViewData["Title"] = Model.Item.Name;
+}
+<div class="container"> 
+    <div class="row">
+        <div class="col-md-3">
+            <img class="esh-catalog-thumbnail" src="@Model.Item.PictureUrl" />
+        </div>
+        <div class="col-md-9">
+            <p>Name: @Model.Item.Name</p>
+            <p>Material: @Model.Item.Material.Name</p>
+            <p>Source: @Model.Item.Source.Name</p>
+            <p>Size: @Model.Item.Size</p>
+            <p>Weight: @Model.Item.Weight</p>
+            <p>Price: @Model.Item.Price</p>
+            <form asp-controller="Basket" asp-action="Add" 
+            asp-route-catalogItemId="@(Model.Item.Id)"
+            asp-route-countItems="1"  method="post">
+            <input class="esh-catalog-send"
+            type="submit" 
+            value="[Add to basket]">
+            </form>
+         </div>
+    </div>
+</div>
+
+
+<a
+asp-controller="Basket" asp-action="Get" >
+Get
+</a> 
