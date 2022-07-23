@@ -23,21 +23,33 @@ namespace MVC.Services
 
         public async Task AddBasket(CatalogItem catalogItem, int countItems)
         {
-            var result = await _httpClient.SendAsync<object, AddBasketRequest>($"{_settings.Value.BasketUrl}/Add",
-            HttpMethod.Post,
-            new AddBasketRequest
-            {
-                catalogItem = catalogItem,
-                countItems = countItems
-            });
+            var result = await _httpClient.SendAsync<object, AddBasketRequest>(
+                $"{_settings.Value.BasketUrl}/Add",
+                HttpMethod.Post,
+                new AddBasketRequest
+                {
+                    CatalogItem = catalogItem,
+                    CountItems = countItems
+                });
+        }
+
+        public async Task RemoveBasket(CatalogItem catalogItem)
+        {
+            var result = await _httpClient.SendAsync<object, RemoveBasketItemRequest>(
+                $"{_settings.Value.BasketUrl}/Remove",
+                HttpMethod.Post,
+                new RemoveBasketItemRequest
+                {
+                    CatalogItem = catalogItem
+                });
         }
 
         public async Task<BasketData> GetBasket()
         {
-            var result = await _httpClient.SendAsync<BasketDataSerializedResponse, object>($"{_settings.Value.BasketUrl}/Get",
-            HttpMethod.Post,
-            null
-            );
+            var result = await _httpClient.SendAsync<BasketDataSerializedResponse, object>(
+                $"{_settings.Value.BasketUrl}/Get",
+                HttpMethod.Post,
+                null);
 
             _logger.LogInformation($"result: {result}");
 
@@ -46,12 +58,16 @@ namespace MVC.Services
                 Data = new Dictionary<CatalogItem, int>()
             };
 
+            if (result is null)
+            {
+                return basketData;
+            }
+
             foreach (var item in result.Data)
             {
                 basketData.Data.Add(
                 _jsonSerializer.Deserialize<CatalogItem>(item.Key),
-                item.Value
-                );
+                item.Value);
             }
 
             return basketData;

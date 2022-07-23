@@ -1,29 +1,35 @@
 using IdentityModel.Client;
+
 // using Infrastructure.Configuration;
 using MVC.Services.Interfaces;
 using Newtonsoft.Json;
-// using Newtonsoft.Json;
 
+// using Newtonsoft.Json;
 namespace MVC.Services;
 
 public class HttpClientService : IHttpClientService
 {
     private readonly IHttpClientFactory _clientFactory;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger<HttpClientService> _logger;
 
     public HttpClientService(
         IHttpClientFactory clientFactory,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<HttpClientService> logger)
     {
         _clientFactory = clientFactory;
         _httpContextAccessor = httpContextAccessor;
+        _logger = logger;
     }
 
     public async Task<TResponse> SendAsync<TResponse, TRequest>(string url, HttpMethod method, TRequest? content)
     {
         var client = _clientFactory.CreateClient();
 
-        var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
+        var token = await _httpContextAccessor.HttpContext?.GetTokenAsync("access_token") !;
+        _logger.LogInformation($"token is:{token}");
+
         if (!string.IsNullOrEmpty(token))
         {
             client.SetBearerToken(token);

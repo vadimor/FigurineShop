@@ -5,6 +5,7 @@ using MVC.Models.Requests;
 using MVC.Models.Response;
 using MVC.Services.Interfaces;
 using MVC.ViewModels;
+using MVC.ViewModels.CatalogViewModels;
 
 namespace MVC.Services;
 
@@ -21,7 +22,7 @@ public class CatalogService : ICatalogService
         _logger = logger;
     }
 
-    public async Task<Catalog> GetCatalogItems(int page, int take, int? material, int? source, int? priceMin, int? priceMax, int? weightMin, int? weightMax, int? sizeMin, int? sizeMax)
+    public async Task<Catalog> GetCatalogItems(int page, int take, int? material, int? source, int? priceMin, int? priceMax, int? weightMin, int? weightMax, int? sizeMin, int? sizeMax, CatalogTypeSorting? sorting)
     {
         var filters = new Dictionary<CatalogTypeFilter, int>();
 
@@ -34,7 +35,7 @@ public class CatalogService : ICatalogService
         {
             filters.Add(CatalogTypeFilter.Source, source.Value);
         }
-        
+
         if (priceMin.HasValue)
         {
             filters.Add(CatalogTypeFilter.PriceMin, priceMin.Value);
@@ -59,22 +60,38 @@ public class CatalogService : ICatalogService
         {
             filters.Add(CatalogTypeFilter.SizeMin, sizeMin.Value);
         }
-        
+
         if (sizeMax.HasValue)
         {
             filters.Add(CatalogTypeFilter.SizeMax, sizeMax.Value);
         }
 
-        var result = await _httpClient.SendAsync<Catalog, PaginatedItemsRequest<CatalogTypeFilter>>($"{_settings.Value.CatalogUrl}/items",
-           HttpMethod.Post,
-           new PaginatedItemsRequest<CatalogTypeFilter>()
-           {
-               PageIndex = page,
-               PageSize = take,
-               Filters = filters
-           });
+        var result = await _httpClient.SendAsync<Catalog, PaginatedItemsRequest<CatalogTypeFilter, CatalogTypeSorting>>(
+            $"{_settings.Value.CatalogUrl}/items",
+            HttpMethod.Post,
+            new PaginatedItemsRequest<CatalogTypeFilter, CatalogTypeSorting>()
+               {
+                   PageIndex = page,
+                   PageSize = take,
+                   Filters = filters,
+                   Sorting = sorting.GetValueOrDefault()
+               });
 
         return result;
+    }
+
+    public IEnumerable<SelectListItem> GetSortingTypes()
+    {
+        var list = new List<SelectListItem>();
+        var names = Enum.GetNames(typeof(CatalogTypeSorting));
+        var values = Enum.GetValues(typeof(CatalogTypeSorting));
+
+        for (var i = 0; i < names.Length; i++)
+        {
+            list.Add(new SelectListItem(names[i], ((int)values.GetValue(i) !).ToString()));
+        }
+
+        return list;
     }
 
     public async Task<IEnumerable<SelectListItem>> GetMaterials()
@@ -82,8 +99,7 @@ public class CatalogService : ICatalogService
         var result = await _httpClient.SendAsync<ItemsListResponse<CatalogMaterial>, object?>(
             $"{_settings.Value.CatalogUrl}/GetMaterials",
             HttpMethod.Post,
-            null
-            );
+            null);
 
         var list = new List<SelectListItem>()
         {
@@ -111,8 +127,7 @@ public class CatalogService : ICatalogService
         var result = await _httpClient.SendAsync<ItemsListResponse<CatalogSource>, object?>(
             $"{_settings.Value.CatalogUrl}/GetSources",
             HttpMethod.Post,
-            null
-            );
+            null);
 
         var list = new List<SelectListItem>()
         {
@@ -136,17 +151,15 @@ public class CatalogService : ICatalogService
         return list;
     }
 
-
     public async Task<CatalogItem> GetItem(int id)
     {
         var result = await _httpClient.SendAsync<CatalogItem, object?>(
             $"{_settings.Value.CatalogUrl}/GetItem",
             HttpMethod.Post,
-            new GetItemRequest
+            new GetRequest
             {
                 Id = id
-            }
-            );
+            });
 
         return result;
     }
