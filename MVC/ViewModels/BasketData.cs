@@ -2,6 +2,6 @@
 {
     public class BasketData
     {
-        public Dictionary<CatalogItem, int> Data { get; set; }
+        public Dictionary<CatalogItem, int> Data { get; set; } = new Dictionary<CatalogItem, int>();
     }
 }

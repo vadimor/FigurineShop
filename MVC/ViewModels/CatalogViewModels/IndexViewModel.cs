@@ -4,9 +4,10 @@ namespace MVC.ViewModels.CatalogViewModels;
 
 public class IndexViewModel
 {
-    public IEnumerable<CatalogItem> CatalogItems { get; set; }
-    public IEnumerable<SelectListItem> Materials { get; set; }
-    public IEnumerable<SelectListItem> Sources { get; set; }
+    public IEnumerable<CatalogItem> CatalogItems { get; set; } = Enumerable.Empty<CatalogItem>();
+    public IEnumerable<SelectListItem> Materials { get; set; } = Enumerable.Empty<SelectListItem>();
+    public IEnumerable<SelectListItem> Sources { get; set; } = Enumerable.Empty<SelectListItem>();
+    public IEnumerable<SelectListItem> Sorting { get; set; } = Enumerable.Empty<SelectListItem>();
     public int? MaterialFilterApplied { get; set; }
     public int? SourceFilterApplied { get; set; }
     public int? PriceMinFilterApplied { get; set; }
@@ -15,5 +16,6 @@ public class IndexViewModel
     public int? WeightMaxFilterApplied { get; set; }
     public int? SizeMinFilterApplied { get; set; }
     public int? SizeMaxFilterApplied { get; set; }
-    public PaginationInfo PaginationInfo { get; set; }
+    public CatalogTypeSorting? SortingApplied { get; set; }
+    public PaginationInfo PaginationInfo { get; set; } = null!;
 }

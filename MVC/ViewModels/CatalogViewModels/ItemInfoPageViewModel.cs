@@ -2,6 +2,6 @@
 {
     public class ItemInfoPageViewModel
     {
-        public CatalogItem Item { get; set; }
+        public CatalogItem Item { get; set; } = null!;
     }
 }
