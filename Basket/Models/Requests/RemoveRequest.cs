@@ -2,9 +2,8 @@
 
 namespace Basket.Models.Requests
 {
-    public class AddRequest
+    public class RemoveRequest
     {
         public CatalogItemDto CatalogItem { get; set; } = null!;
-        public int CountItems { get; set; }
     }
 }
