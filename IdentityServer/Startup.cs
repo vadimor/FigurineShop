@@ -1,16 +1,17 @@
-﻿using IdentityServer4.Quickstart.UI;
+﻿using System.IO;
+using IdentityServer4.Quickstart.UI;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.IO;
 
 namespace IdentityServer
 {
     public class Startup
     {
+        [System.Obsolete]
         public void ConfigureServices(IServiceCollection services)
         {
             var configuration = new ConfigurationBuilder()

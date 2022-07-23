@@ -1,6 +1,6 @@
-﻿using IdentityServer4.Models;
+﻿using System.Collections.Generic;
+using IdentityServer4.Models;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 
 namespace IdentityServer
 {
@@ -11,7 +11,10 @@ namespace IdentityServer
             return new IdentityResource[]
             {
                 new IdentityResources.OpenId(),
-                new IdentityResources.Profile()
+                new IdentityResources.Profile(),
+                new IdentityResource(
+                    "roleidentity",
+                    claimTypes: new[] { "role" })
             };
         }
 
@@ -28,13 +31,28 @@ namespace IdentityServer
                 },
                 new ApiResource("catalog")
                 {
+                    UserClaims = new[] { "role" },
                     Scopes = new List<Scope>
                     {
                         new Scope("catalog.catalogbff"),
-                        new Scope("catalog.catalogitem"),
-                        new Scope("catalog.catalogmaterial"),
-                        new Scope("catalog.catalogsource"),
+                        new Scope("catalog.admin")
                     },
+                },
+                new ApiResource("basket")
+                {
+                    UserClaims = new[] { "role" },
+
+                    Scopes = new List<Scope>
+                    {
+                        new Scope("basket")
+                    }
+                },
+                new ApiResource("comment")
+                {
+                    Scopes = new List<Scope>
+                    {
+                        new Scope("commentbff")
+                    }
                 }
             };
         }
@@ -45,12 +63,13 @@ namespace IdentityServer
             {
                 new Client
                 {
+                    // AlwaysIncludeUserClaimsInIdToken = true,
                     ClientId = "mvc_pkce",
                     ClientName = "MVC PKCE Client",
                     AllowedGrantTypes = GrantTypes.Code,
-                    ClientSecrets = {new Secret("secret".Sha256())},
-                    RedirectUris = { $"{configuration["MvcUrl"]}/signin-oidc"},
-                    AllowedScopes = {"openid", "profile", "mvc"},
+                    ClientSecrets = { new Secret("secret".Sha256()) },
+                    RedirectUris = { $"{configuration["MvcUrl"]}/signin-oidc" },
+                    AllowedScopes = { "openid", "profile", "mvc", "roleidentity", "basket", "commentbff", "catalog.admin" },
                     RequirePkce = true,
                     RequireConsent = false
                 },
@@ -82,6 +101,19 @@ namespace IdentityServer
                 },
                 new Client
                 {
+                    ClientId = "comment",
+
+                    // no interactive user, use the clientid/secret for authentication
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+
+                    // secret for authentication
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+                },
+                new Client
+                {
                     ClientId = "catalogswaggerui",
                     ClientName = "Catalog Swagger UI",
                     AllowedGrantTypes = GrantTypes.Implicit,
@@ -93,8 +125,8 @@ namespace IdentityServer
                     AllowedScopes =
                     {
                          "mvc",
-                         "catalog.catalogbff","catalog.catalogsource",
-                         "catalog.catalogmaterial", "catalog.catalogitem"
+                         "catalog.catalogbff",
+                         "roleidentity"
                     }
                 },
                 new Client
@@ -113,6 +145,22 @@ namespace IdentityServer
                          "basket.basketbff"
                     }
                 },
+                new Client
+                {
+                    ClientId = "commentswaggerui",
+                    ClientName = "Comment Swagger UI",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+                    AllowAccessTokensViaBrowser = true,
+
+                    RedirectUris = { $"{configuration["CommentApi"]}/swagger/oauth2-redirect.html" },
+                    PostLogoutRedirectUris = { $"{configuration["CommentApi"]}/swagger/" },
+
+                    AllowedScopes =
+                    {
+                         "mvc",
+                         "comment"
+                    }
+                }
             };
         }
     }
