@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Quickstart.UI;
@@ -8,12 +14,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Principal;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Host.Quickstart.Account
 {
@@ -25,29 +26,40 @@ namespace Host.Quickstart.Account
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clientStore;
         private readonly IEventService _events;
+        private readonly ILogger<ExternalController> _logger;
 
         public ExternalController(
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IEventService events,
+            ILogger<ExternalController> logger,
             TestUserStore users = null)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
             // this is where you would plug in your own custom identity management library (e.g. ASP.NET Identity)
             _users = users ?? new TestUserStore(TestUsers.Users);
-
+            _logger = logger;
             _interaction = interaction;
             _clientStore = clientStore;
             _events = events;
         }
 
         /// <summary>
-        /// initiate roundtrip to external authentication provider
+        /// initiate roundtrip to external authentication provider.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [HttpGet]
+#pragma warning disable SA1611 // Element parameters should be documented
+#pragma warning disable SA1611 // Element parameters should be documented
         public async Task<IActionResult> Challenge(string provider, string returnUrl)
+#pragma warning restore SA1611 // Element parameters should be documented
+#pragma warning restore SA1611 // Element parameters should be documented
         {
-            if (string.IsNullOrEmpty(returnUrl)) returnUrl = "~/";
+            _logger.LogInformation("Start challenge");
+            if (string.IsNullOrEmpty(returnUrl))
+            {
+                returnUrl = "~/";
+            }
 
             // validate returnUrl - either it is a valid OIDC URL or back to a local page
             if (Url.IsLocalUrl(returnUrl) == false && _interaction.IsValidReturnUrl(returnUrl) == false)
@@ -56,14 +68,14 @@ namespace Host.Quickstart.Account
                 throw new Exception("invalid return URL");
             }
 
-            if (AccountOptions.WindowsAuthenticationSchemeName == provider)
+            if (provider == AccountOptions.WindowsAuthenticationSchemeName)
             {
                 // windows authentication needs special handling
                 return await ProcessWindowsLoginAsync(returnUrl);
             }
             else
             {
-                // start challenge and roundtrip the return URL and scheme 
+                // start challenge and roundtrip the return URL and scheme
                 var props = new AuthenticationProperties
                 {
                     RedirectUri = Url.Action(nameof(Callback)),
@@ -79,11 +91,14 @@ namespace Host.Quickstart.Account
         }
 
         /// <summary>
-        /// Post processing of external authentication
+        /// Post processing of external authentication.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [HttpGet]
         public async Task<IActionResult> Callback()
         {
+            _logger.LogInformation("Start callback");
+
             // read external identity from the temporary cookie
             var result = await HttpContext.AuthenticateAsync(IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme);
             if (result?.Succeeded != true)
@@ -93,6 +108,7 @@ namespace Host.Quickstart.Account
 
             // lookup our user and external provider info
             var (user, provider, providerUserId, claims) = FindUserFromExternalProvider(result);
+
             if (user == null)
             {
                 // this might be where you might initiate a custom workflow for user registration
@@ -137,6 +153,8 @@ namespace Host.Quickstart.Account
 
         private async Task<IActionResult> ProcessWindowsLoginAsync(string returnUrl)
         {
+            _logger.LogInformation("Start ProcessWindowsLoginAsync");
+
             // see if windows auth has already been requested and succeeded
             var result = await HttpContext.AuthenticateAsync(AccountOptions.WindowsAuthenticationSchemeName);
             if (result?.Principal is WindowsPrincipal wp)
@@ -184,6 +202,7 @@ namespace Host.Quickstart.Account
 
         private (TestUser user, string provider, string providerUserId, IEnumerable<Claim> claims) FindUserFromExternalProvider(AuthenticateResult result)
         {
+            _logger.LogInformation("Start FindUserFromExternalProvider");
             var externalUser = result.Principal;
 
             // try to determine the unique id of the external user (issued by the provider)
