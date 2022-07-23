@@ -5,7 +5,8 @@ namespace Catalog.Services.Interfaces
 {
     public interface ICatalogSourceService
     {
-        Task<ItemsListResponse<CatalogSourceDto>> GetSourcesAsync();
+        Task<IEnumerable<CatalogSourceDto>> GetSourcesAsync();
+        Task<CatalogSourceDto?> GetSourceAsync(int id);
         Task<CatalogSourceDto> AddAsync(string name);
         Task<CatalogSourceDto?> RemoveAsync(int id);
         Task<CatalogSourceDto?> UpdateAsync(int id, string name);
