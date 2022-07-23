@@ -1,0 +1,12 @@
+﻿@model MVC.ViewModels.Admin.MaterialListPageViewModel
+
+@foreach(var item in Model!.Materials)
+{
+	<p>
+	<a
+	asp-controller="Admin" asp-action="MaterialUpdatePage"
+	asp-route-id=@item.Id>
+	@item.Name
+	</a>
+	</p>
+}

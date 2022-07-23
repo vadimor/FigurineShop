@@ -1,0 +1,12 @@
+﻿@model MVC.ViewModels.Admin.SourceListPageViewModel
+
+@foreach(var item in Model!.Sources)
+{
+	<p>
+	<a
+	asp-controller="Admin" asp-action="SourceUpdatePage"
+	asp-route-id=@item.Id>
+	@item.Name
+	</a>
+	</p>
+}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - eShop</title>
+    <title>@ViewData["Title"] - FigurineShop</title>
 
     <environment names="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -38,6 +38,23 @@
                 </section>
                 
                 @await Html.PartialAsync("_LoginPartial")
+                @if (Context.User.Identity is not null)
+                {
+                @if (Context.User.Identity.IsAuthenticated)
+                {
+                    <a
+                    asp-controller="Basket" asp-action="Get">
+                    <img src="~/images/cart.png">
+                    </a>
+                }
+                @if (Context.User.Identity.IsAuthenticated && Context.User.Claims.FirstOrDefault(x => x.Type == "role")?.Value == "admin")
+                {
+                    <a
+                     asp-controller="Admin" asp-action="AdminPage">
+                        Admin
+                    </a>
+                }
+                }
             </article>
         </div>
     </header>

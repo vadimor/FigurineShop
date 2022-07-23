@@ -1,0 +1,51 @@
+﻿@model MVC.ViewModels.Admin.AddItemPageViewModel
+
+<form asp-controller="Admin" asp-action="AddItem" method="post">
+	<p>
+	<label>
+		Name: <input name="Name" type="text"></input>
+    </label>
+	</p>
+	<p>
+	<label>
+		Price: <input name="Price" min="0" type="number"></input>
+    </label>
+	</p>
+	<p>
+	<label>
+		Weight: <input name="Weight" min="0" type="number" ></input>
+    </label>
+	</p>
+	<p>
+	<label>
+		Size: <input name="Size" min="0"  type="number"  ></input>
+    </label>
+	</p>
+	<p>
+	<label>
+		Material: <select asp-for="@Model!.CatalogMaterialId" asp-items="@Model!.Materials" value="@Model.Materials.First()" ></select>
+    </label>
+	</p>
+	<p>
+	<label>
+		Source:	  <select asp-for="@Model!.CatalogSourceId" asp-items="@Model.Sources" value="@Model.Sources.First()" ></select>
+    </label>
+	</p>
+	<p>
+	<label>
+		Picture file name: <input name="PictureFileName" type="text" ></input>
+    </label>
+	</p>
+	<p>
+	<label>
+		Available Stock: <input min="0" name="AvailableStock" type="number" ></input>
+    </label>
+	</p>
+	<p>
+	<input name="CatalogMaterialId" type="hidden" value="@Model.CatalogMaterialId" />
+	</p>
+	<p>
+	<input name="CatalogSourceId" type="hidden" value="@Model.CatalogSourceId" />
+	</p>
+	<p><input type="submit" value="send" /></p>
+</form>

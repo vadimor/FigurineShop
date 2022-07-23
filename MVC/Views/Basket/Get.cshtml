@@ -4,7 +4,22 @@
     ViewData["Title"] = "Basket";
 }
 
-@foreach(var item in Model.Data)
+@if(Model!.Data.Count != 0){
+    @foreach(var item in Model.Data)
+    {
+        <p><form asp-controller="Basket" asp-action="Add">
+        <input type="hidden" name="catalogItemId" value="@item.Key.Id">
+        @item.Key.Name : <input type="number" min="0" max="@item.Key.AvailableStock" name="countItems" value="@item.Value">
+        <input type="submit" value="update">
+        </form>
+        <form asp-controller="Basket" asp-action="Remove">
+            <input type="hidden" name="catalogItemId" value="@item.Key.Id">
+            <input type="submit" value="remove">
+        </form>
+        </p>
+    }
+} 
+else
 {
-    <p>@item.Key.Name : @item.Value</p>
+    <p>You have not added a product yet</p>
 }

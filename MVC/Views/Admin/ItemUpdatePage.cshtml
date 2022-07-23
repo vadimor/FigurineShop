@@ -1,0 +1,59 @@
+﻿@model MVC.ViewModels.Admin.ItemUpdatePageViewModel
+
+<form asp-controller="Admin" asp-action="ItemUpdate" method="post">
+	<input name="Id" type="hidden" value=@Model!.Item!.Id />
+	<p>
+	<label>
+		Id: @Model.Item.Id
+    </label>
+	</p>
+	<p>
+	<label>
+		Name: <input name="Name" type="text" value="@Model.Item.Name" ></input>
+    </label>
+	</p>
+	<p>
+	<label>
+		Price: <input name="Price"  min="0" type="number" value="@Model.Item.Price" ></input>
+    </label>
+	</p>
+	<p>
+	<label>
+		Weight: <input name="Weight" min="0" type="number" value="@Model.Item.Weight" ></input>
+    </label>
+	</p>
+	<p>
+	<label>
+		Size: <input name="Size" min="0" type="number" value="@Model.Item.Size" ></input>
+    </label>
+	</p>
+	<p>
+	<label>
+		Material: <select asp-for="@Model.MaterialApplied" asp-items="@Model.Materials" value="@Model.Item.Material.Id"></select>
+    </label>
+	</p>
+	<p>
+	</p>
+	<p>
+	<label>
+		Source: <select asp-for="@Model.SourceApplied" asp-items="@Model.Sources" value="@Model.Item.Material.Id"></select>
+    </label>
+	</p>
+	<p>
+	<label>
+		Picture file name: <input name="PictureFileName" type="text" value="@Model.PictureFileName" ></input>
+    </label>
+	</p>
+	<p>
+	<label>
+		Available Stock: <input min="0" name="AvailableStock" type="number" value="@Model.Item.AvailableStock" ></input>
+    </label>
+	</p>
+	<input name="MaterialApplied" type="hidden" value=@Model.MaterialApplied />
+	<input name="SourceApplied" type="hidden" value=@Model.SourceApplied />
+	<p><input type="submit" value="send" /> </p>
+</form>
+<form asp-controller="Admin" asp-action="RemoveItem"
+	asp-route-id=@Model.Item.Id method="post">
+	<p><input type="submit" value="Delete" /> </p>
+</form> 

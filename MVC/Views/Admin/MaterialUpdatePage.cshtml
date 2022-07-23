@@ -1,0 +1,18 @@
+﻿@model MVC.ViewModels.Admin.MaterialUpdatePageViewModel
+
+<form asp-controller="Admin" asp-action="MaterialUpdate" method="post">
+	<input name="Id" type="hidden" value=@Model!.Material.Id />
+	<label>
+		<p>Id: @Model.Material.Id</p>
+    </label>
+	<p>
+	<label>
+		Name: <input name="Name" type="text" value="@Model.Material.Name" ></input>
+    </label>
+	</p>
+	<p><input type="submit" value="send" /> </p>
+</form>
+<form asp-controller="Admin" asp-action="RemoveMaterial"
+	asp-route-id=@Model.Material.Id method="post">
+	<p><input type="submit" value="Delete" /> </p>
+</form> 

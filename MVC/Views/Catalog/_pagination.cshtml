@@ -10,6 +10,15 @@
                     asp-action="Index"
                     asp-route-page="@(Model.ActualPage -1)"
                     asp-route-itemsPage="@(Model.ItemsPerPageRequest)"
+                    asp-route-materialFilterApplied =@(Model.MaterialFilterApplied)
+                    asp-route-sourceFilterApplied =@(Model.SourceFilterApplied)
+                    asp-route-priceMinFilterApplied =@(Model.PriceMinFilterApplied)
+                    asp-route-priceMaxFilterApplied =@(Model.PriceMaxFilterApplied)
+                    asp-route-weightMinFilterApplied =@(Model.WeightMinFilterApplied)
+                    asp-route-weightMaxFilterApplied =@(Model.WeightMaxFilterApplied)
+                    asp-route-sizeMinFilterApplied =@(Model.SizeMinFilterApplied)
+                    asp-route-sizeMaxFilterApplied =@(Model.SizeMaxFilterApplied)
+                    asp-route-sortingApplied =@(Model.SortingApplied)
                     aria-label="Previous">
                     Previous
                 </a>
@@ -24,6 +33,15 @@
                     asp-action="Index"
                     asp-route-page="@(Model.ActualPage + 1)"
                     asp-route-itemsPage="@(Model.ItemsPerPageRequest)"
+                    asp-route-materialFilterApplied =@(Model.MaterialFilterApplied)
+                    asp-route-sourceFilterApplied =@(Model.SourceFilterApplied)
+                    asp-route-priceMinFilterApplied =@(Model.PriceMinFilterApplied)
+                    asp-route-priceMaxFilterApplied =@(Model.PriceMaxFilterApplied)
+                    asp-route-weightMinFilterApplied =@(Model.WeightMinFilterApplied)
+                    asp-route-weightMaxFilterApplied =@(Model.WeightMaxFilterApplied)
+                    asp-route-sizeMinFilterApplied =@(Model.SizeMinFilterApplied)
+                    asp-route-sizeMaxFilterApplied =@(Model.SizeMaxFilterApplied)
+                    asp-route-sortingApplied =@(Model.SortingApplied)
                     aria-label="Next">
                     Next
                 </a>

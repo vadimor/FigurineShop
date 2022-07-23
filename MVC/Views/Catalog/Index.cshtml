@@ -13,6 +13,10 @@
         <div class="container">
            <form asp-action="Index" asp-controller="Catalog" method="post">
             <label>
+                Sorting:
+                <select asp-for="@Model.SortingApplied" asp-items="@Model.Sorting"></select>
+            </label>
+            <label>
                 Material:
                 <select asp-for="@Model.MaterialFilterApplied" asp-items="@Model.Materials"></select>
             </label>

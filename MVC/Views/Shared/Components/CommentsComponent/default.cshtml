@@ -1,0 +1,69 @@
+﻿@model MVC.ViewModels.Components.CommentsComponentViewModel
+
+@{
+    var userId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
+    bool haveComment = false;
+
+    if (userId is not null)
+    {
+        if (Model!.Comments.FirstOrDefault(x => x.UserId.ToString() == userId) is not null)
+        {
+            haveComment = true;  
+        }
+    }
+
+    var list = new List<Comment>(Model!.Comments);
+    var userComment = list.Find(x => x.UserId.ToString() == userId);
+    if (userComment is not null)
+    {
+        list.Remove(userComment);
+    }
+
+}
+
+@if (User.Identity is not null && User.Identity.IsAuthenticated && !haveComment)
+{
+    <p>
+        <form asp-controller="Comment" asp-action="Add"
+     method="post">
+            <input name="ProductId" type="hidden" value="@(Model.ProductId)">
+            <input name="UserName" type="hidden" value="@(User.FindFirstValue("name"))">
+            <p>
+                1 <input id="rate" name="Rate" type="range" min="1" max="5" step="1" value="5"> 5      <p/>
+                <p>
+                    <input style="width: 100%; height: 150px; padding: 12px 20px; box-sizing: border-box; border: 2px solid #ccc; border-radius: 4px; background-color: #f8f8f8; resize: none;"
+      name="Commentary" type="text" maxlength="1000">
+                    <p/>
+                    <input class="esh-catalog-send"
+      type="submit" 
+      value="[Leave a comment]">
+        </form>
+    </p>
+}
+<div>
+        @if (userComment is not null)
+        {
+          <div>
+                <br/>
+                <h4>@userComment.UserName</h4>
+                <p>@userComment.Commentary</p>
+                <p> Raiting: @userComment.Rate/5</p>
+                <form asp-controller="Comment" asp-action="Remove"
+                method="post">
+                <input name="Id" type="hidden" value="@(userComment.Id)">
+                <input class="esh-catalog-send"
+                type="submit" 
+                value="[Remove comment]">
+                </form>
+            </div>  
+        }
+        @foreach (var item in list)
+         {
+            <div>
+                <br/>
+                <h4>@item.UserName</h4>
+                <p>@item.Commentary</p>
+                <p> Raiting: @item.Rate/5</p>
+            </div>
+         }
+</div>

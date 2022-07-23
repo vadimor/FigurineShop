@@ -1,7 +1,7 @@
 ﻿@model MVC.ViewModels.CatalogViewModels.ItemInfoPageViewModel
 
 @{
-    ViewData["Title"] = Model.Item.Name;
+    ViewData["Title"] = Model!.Item.Name;
 }
 <div class="container"> 
     <div class="row">
@@ -22,12 +22,8 @@
             type="submit" 
             value="[Add to basket]">
             </form>
+            @await Component.InvokeAsync("CommentsComponent", new { id = Model.Item.Id })
+
          </div>
     </div>
-</div>
-
-
-<a
-asp-controller="Basket" asp-action="Get" >
-Get
-</a> 
+</div> 

@@ -1,0 +1,18 @@
+﻿@model MVC.ViewModels.Admin.SourceUpdatePageViewModel
+
+<form asp-controller="Admin" asp-action="SourceUpdate" method="post">
+	<input name="Id" type="hidden" value=@Model!.Source.Id />
+	<label>
+		<p>Id: @Model.Source.Id</p>
+    </label>
+	<p>
+	<label>
+		Name: <input name="Name" type="text" value="@Model.Source.Name" ></input>
+    </label>
+	</p>
+	<p><input type="submit" value="send" /> </p>
+</form>
+<form asp-controller="Admin" asp-action="RemoveSource"
+	asp-route-id=@Model.Source.Id method="post">
+	<p><input type="submit" value="Delete" /> </p>
+</form> 

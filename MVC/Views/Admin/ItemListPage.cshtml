@@ -1,0 +1,15 @@
+﻿@model MVC.ViewModels.Admin.ItemListPageViewModel
+
+@if (Model is not null)
+{
+	@foreach(var item in Model.Items)
+	{
+		<p>
+		<a
+		asp-controller="Admin" asp-action="ItemUpdatePage"
+		asp-route-id=@item.Id>
+		@item.Name
+		</a>
+		</p>
+	}
+}
