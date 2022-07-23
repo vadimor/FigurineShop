@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CS0006: Не удалось найти файл метаданных "E:\NIX\FigurineShop\Infrastructure\bin\Debug\net6.0\ref\Infrastructure.dll".
+dotnet_diagnostic.CS0006.severity = warning

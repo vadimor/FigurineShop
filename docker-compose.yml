@@ -32,6 +32,21 @@ services:
       - postgres
     ports:
       - 5000:5000
+   comment.api:
+    container_name: lde.comment.api
+    build:
+      context: .
+      dockerfile: Comment/Dockerfile
+    environment:
+       - ASPNETCORE_ENVIRONMENT=Development
+       - ASPNETCORE_URLS=http://+:5004
+       - ConnectionString=server=www.figurineshop.com;port=5434;database=comment;uid=postgres;password=postgres;
+       - Authorization__Authority=http://www.figurineshop.com:5002
+       - PathBase=http://www.figurineshop.com:5004
+    depends_on:
+      - postgresComment
+    ports:
+      - 5004:5004
    web.mvc:
     container_name: lde.web.mvc
     build:
@@ -40,6 +55,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5001
+      - MvcUrl=http://www.figurineshop.com:5001
       - BasketUrl=http://www.figurineshop.com:5003/api/v1/basketbff
       - CatalogUrl=http://www.figurineshop.com:5000/api/v1/catalogbff
       - Authorization__Authority=http://www.figurineshop.com:5002
@@ -66,6 +82,13 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - 5433:5432
+   postgresComment:
+    image: postgres
+    container_name: lde.postgresComment
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5434:5432
    identityserver:
     container_name: lde.identityserver
     build:
@@ -77,6 +100,7 @@ services:
       - MvcUrl=http://www.figurineshop.com
       - CatalogApi=http://www.figurineshop.com:5000
       - BasketApi=http://www.figurineshop.com:5003
+      - CommentApi=http://www.figurineshop.com:5004
     ports:
       - 5002:5002
    redis:
