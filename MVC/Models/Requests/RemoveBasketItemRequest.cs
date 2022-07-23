@@ -2,9 +2,8 @@
 
 namespace MVC.Models.Requests
 {
-    public class AddBasketRequest
+    public class RemoveBasketItemRequest
     {
         public CatalogItem CatalogItem { get; set; } = null!;
-        public int CountItems { get; set; }
     }
 }

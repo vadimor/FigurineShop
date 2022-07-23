@@ -1,7 +1,8 @@
 ﻿namespace MVC.Models.Requests
 {
-    public class GetItemRequest
+    public class RemoveRequest
     {
+        [Required]
         public int Id { get; set; }
     }
 }
