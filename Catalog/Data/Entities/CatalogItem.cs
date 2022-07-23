@@ -11,13 +11,13 @@
         public int Weight { get; set; }
 
         public double Size { get; set; }
-        
+
         public int CatalogMaterialId { get; set; }
-        
+
         public CatalogMaterial Material { get; set; } = null!;
-        
+
         public int CatalogSourceId { get; set; }
-        
+
         public CatalogSource Source { get; set; } = null!;
 
         public string PictureFileName { get; set; } = null!;

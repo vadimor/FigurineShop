@@ -28,8 +28,6 @@ namespace Catalog.Data
 
                 await context.SaveChangesAsync();
             }
-
-
         }
 
         private static IEnumerable<CatalogMaterial> GetPreconfiguredCatalogMaterials()
@@ -63,7 +61,6 @@ namespace Catalog.Data
 
         private static IEnumerable<CatalogItem> GetPreconfiguredItems()
         {
-
             return new List<CatalogItem>()
             {
             new CatalogItem { Name = "Parfom R! Object To-lick", Price = 192.1M, Weight = 300, Size = 14, CatalogSourceId = 1, CatalogMaterialId = 1, AvailableStock = 100, PictureFileName = "1.png" },
