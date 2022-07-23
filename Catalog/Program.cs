@@ -14,13 +14,15 @@ var config = GetConfiguration();
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(
-    opt => opt.Filters.Add<HttpGlobalExceptionFilter>()
-    ).AddJsonOptions(opt => opt.JsonSerializerOptions.WriteIndented = true);
+    opt => opt.Filters.Add<HttpGlobalExceptionFilter>())
+    .AddJsonOptions(opt => opt.JsonSerializerOptions.WriteIndented = true);
 
 builder.Services.AddSwaggerGen(
-    opt => {
-        opt.SwaggerDoc("v1",
-        new OpenApiInfo
+    opt =>
+    {
+        opt.SwaggerDoc(
+            "v1",
+            new OpenApiInfo
         {
             Version = "v1",
             Title = "FigurineShop-Catalog API",
@@ -39,18 +41,13 @@ builder.Services.AddSwaggerGen(
                     Scopes = new Dictionary<string, string>()
                     {
                         { "mvc", "website" },
-                        { "catalog.catalogitem", "catalog.catalogitem" },
-                        { "catalog.catalogmaterial", "catalog.catalogmaterial" },
-                        { "catalog.catalogsource", "catalog.catalogsource" },
-                        { "catalog.catalogbff", "catalog.catalogbff" }
+                        { "roleidentity", "role" }
                     }
-                }
+                },
             }
         });
-       
         opt.OperationFilter<AuthorizeCheckOperationFilter>();
     });
-
 
 builder.AddConfiguration();
 
@@ -94,7 +91,6 @@ app.UseSwagger()
 
 app.UseRouting();
 app.UseCors("CorsPolicy");
-
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -102,8 +98,7 @@ app.UseEndpoints(endPounts =>
 {
     endPounts.MapDefaultControllerRoute();
     endPounts.MapControllers();
-}
-);
+});
 
 CreateDbIfNotExists(app);
 app.Run();
