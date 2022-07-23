@@ -15,8 +15,8 @@ namespace Catalog.Services
             IMapper mapper,
             ICatalogMaterialRepository repository,
             IDbContextWrapper<ApplicationDbContext> dbContextWrapper,
-            ILogger<BaseDataService<ApplicationDbContext>> logger
-        ) : base(dbContextWrapper, logger)
+            ILogger<BaseDataService<ApplicationDbContext>> logger)
+            : base(dbContextWrapper, logger)
         {
             _mapper = mapper;
             _repository = repository;
@@ -31,14 +31,17 @@ namespace Catalog.Services
             });
         }
 
-        public async Task<ItemsListResponse<CatalogMaterialDto>> GetMaterialsAsync()
+        public async Task<IEnumerable<CatalogMaterialDto>> GetMaterialsAsync()
         {
             var result = await _repository.GetMaterialsAsync();
-            return new ItemsListResponse<CatalogMaterialDto>
-            {
-                Count = result.TotalCount,
-                Data = result.Data.Select(x => _mapper.Map<CatalogMaterialDto>(x)).ToList(),
-            };
+            return result.Select(x => _mapper.Map<CatalogMaterialDto>(x)).ToList();
+        }
+
+        public async Task<CatalogMaterialDto?> GetMaterialAsync(int id)
+        {
+            var result = await _repository.GetMaterial(id);
+
+            return _mapper.Map<CatalogMaterialDto>(result);
         }
 
         public async Task<CatalogMaterialDto?> RemoveAsync(int id)
@@ -56,8 +59,7 @@ namespace Catalog.Services
             {
                 var result = await _repository.UpdateAsync(id, name);
                 return _mapper.Map<CatalogMaterialDto>(result);
-            }
-            );
+            });
         }
     }
 }

@@ -15,8 +15,8 @@ namespace Catalog.Services
             ICatalogItemRepository catalogItemService,
             IDbContextWrapper<ApplicationDbContext> dbContextWrapper,
             ILogger<BaseDataService<ApplicationDbContext>> logger)
-            :base(dbContextWrapper,logger)
-        { 
+            : base(dbContextWrapper, logger)
+        {
             _mapper = mapper;
             _repository = catalogItemService;
         }
@@ -37,10 +37,10 @@ namespace Catalog.Services
             });
         }
 
-        public async Task<ItemsListResponse<CatalogItemDto>> GetItemsAsync()
+        public async Task<IEnumerable<CatalogItemDto>> GetItemsAsync()
         {
             var items = await _repository.GetItemsAsync();
-            return new ItemsListResponse<CatalogItemDto> { Count = items.TotalCount, Data = items.Data.Select(x => _mapper.Map<CatalogItemDto>(x)) }; 
+            return items.Select(x => _mapper.Map<CatalogItemDto>(x));
         }
 
         public async Task<CatalogItemDto?> RemoveAsync(int id)
@@ -58,8 +58,7 @@ namespace Catalog.Services
             {
                 var result = await _repository.UpdateAsync(id, name, price, weight, size, catalogMaterialId, catalogSourceId, pictureFileName, availableStock);
                 return _mapper.Map<CatalogItemDto>(result);
-            }
-            );
+            });
         }
     }
 }

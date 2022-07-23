@@ -16,14 +16,14 @@ namespace Catalog.Services
             IMapper mapper,
             ICatalogItemRepository repository,
             IDbContextWrapper<ApplicationDbContext> dbContextWrapper,
-            ILogger<BaseDataService<ApplicationDbContext>> logger
-        ) : base(dbContextWrapper, logger)
+            ILogger<BaseDataService<ApplicationDbContext>> logger)
+            : base(dbContextWrapper, logger)
         {
             _mapper = mapper;
             _repository = repository;
         }
 
-        public async Task<PaginatedItemsResponse<CatalogItemDto>?> GetCatalogItemsAsync(int pageSize, int pageIndex, Dictionary<CatalogTypeFilter, int>? filters)
+        public async Task<PaginatedItemsResponse<CatalogItemDto>?> GetCatalogItemsAsync(int pageSize, int pageIndex, Dictionary<CatalogTypeFilter, int>? filters, CatalogTypeSorting? sorting)
         {
             int? materialFilter = null;
             int? sourceFilter = null;
@@ -33,6 +33,7 @@ namespace Catalog.Services
             int? weightMaxFilter = null;
             int? sizeMinFilter = null;
             int? sizeMaxFilter = null;
+            Data.Enums.CatalogTypeSorting sortingEntity;
 
             if (filters != null)
             {
@@ -45,12 +46,12 @@ namespace Catalog.Services
                 {
                     sourceFilter = source;
                 }
-                
+
                 if (filters.TryGetValue(CatalogTypeFilter.PriceMin, out var priceMin))
                 {
                     priceMinFilter = priceMin;
                 }
-                
+
                 if (filters.TryGetValue(CatalogTypeFilter.PriceMax, out var priceMax))
                 {
                     priceMaxFilter = priceMax;
@@ -65,7 +66,7 @@ namespace Catalog.Services
                 {
                     weightMaxFilter = weightMax;
                 }
-                
+
                 if (filters.TryGetValue(CatalogTypeFilter.SizeMin, out var sizeMin))
                 {
                     sizeMinFilter = sizeMin;
@@ -77,9 +78,16 @@ namespace Catalog.Services
                 }
             }
 
+            sorting = sorting ?? 0;
+
+            if (!Enum.TryParse(sorting.Value.ToString(), out sortingEntity))
+            {
+                sortingEntity = 0;
+            }
+
             var page = await _repository.GetByPageAsync(
-                pageIndex, pageSize, materialFilter, sourceFilter, priceMinFilter, priceMaxFilter, weightMinFilter, weightMaxFilter, sizeMinFilter, sizeMaxFilter);
-            
+                pageIndex, pageSize, materialFilter, sourceFilter, priceMinFilter, priceMaxFilter, weightMinFilter, weightMaxFilter, sizeMinFilter, sizeMaxFilter, sortingEntity);
+
             if (page == null)
             {
                 return null;

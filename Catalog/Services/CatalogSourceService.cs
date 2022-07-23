@@ -15,12 +15,13 @@ namespace Catalog.Services
             IMapper mapper,
             ICatalogSourceRepository repository,
             IDbContextWrapper<ApplicationDbContext> dbContextWrapper,
-            ILogger<BaseDataService<ApplicationDbContext>> logger
-        ) : base(dbContextWrapper, logger)
+            ILogger<BaseDataService<ApplicationDbContext>> logger)
+            : base(dbContextWrapper, logger)
         {
             _mapper = mapper;
             _repository = repository;
         }
+
         public async Task<CatalogSourceDto> AddAsync(string name)
         {
             return await ExecuteSafeAsync(async () =>
@@ -30,14 +31,17 @@ namespace Catalog.Services
             });
         }
 
-        public async Task<ItemsListResponse<CatalogSourceDto>> GetSourcesAsync()
+        public async Task<IEnumerable<CatalogSourceDto>> GetSourcesAsync()
         {
             var result = await _repository.GetSourcesAsync();
-            return new ItemsListResponse<CatalogSourceDto>
-            {
-                Count = result.TotalCount,
-                Data = result.Data.Select(x => _mapper.Map<CatalogSourceDto>(x)).ToList(),
-            };
+            return result.Select(x => _mapper.Map<CatalogSourceDto>(x)).ToList();
+        }
+
+        public async Task<CatalogSourceDto?> GetSourceAsync(int id)
+        {
+            var result = await _repository.GetSource(id);
+
+            return _mapper.Map<CatalogSourceDto>(result);
         }
 
         public async Task<CatalogSourceDto?> RemoveAsync(int id)
@@ -55,8 +59,7 @@ namespace Catalog.Services
             {
                 var result = await _repository.UpdateAsync(id, name);
                 return _mapper.Map<CatalogSourceDto>(result);
-            }
-            );
+            });
         }
     }
 }
