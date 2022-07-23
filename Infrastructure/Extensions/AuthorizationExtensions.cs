@@ -35,6 +35,13 @@ public static class AuthorizationExtensions
             });
         services.AddAuthorization(options =>
         {
+            options.AddPolicy(AuthPolicy.AdminPolicy, policy =>
+            {
+                policy.AuthenticationSchemes.Add(AuthScheme.Site);
+                policy.Requirements.Add(new ScopeRequirement());
+                policy.RequireClaim(JwtRegisteredClaimNames.Sub);
+                policy.RequireClaim("role", "admin");
+            });
             options.AddPolicy(AuthPolicy.AllowClientPolicy, policy =>
             {
                 policy.AuthenticationSchemes.Add(AuthScheme.Internal);
