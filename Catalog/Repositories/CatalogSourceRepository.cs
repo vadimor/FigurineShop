@@ -11,8 +11,7 @@ namespace Catalog.Repositories
 
         public CatalogSourceRepository(
             IDbContextWrapper<ApplicationDbContext> dbContextWrapper,
-            ILogger<CatalogSourceRepository> logger
-            )
+            ILogger<CatalogSourceRepository> logger)
         {
             _dbContext = dbContextWrapper.DbContext;
             _logger = logger;
@@ -29,12 +28,20 @@ namespace Catalog.Repositories
             return source;
         }
 
-        public async Task<ItemsList<CatalogSource>> GetSourcesAsync()
+        public async Task<IEnumerable<CatalogSource>> GetSourcesAsync()
         {
             var sources = await _dbContext.CatalogSources
                 .ToListAsync();
 
-            return new ItemsList<CatalogSource> { TotalCount = sources.Count, Data = sources };
+            return sources;
+        }
+
+        public async Task<CatalogSource?> GetSource(int id)
+        {
+            var result = await _dbContext.CatalogSources
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            return result;
         }
 
         public async Task<CatalogSource?> RemoveAsync(int id)

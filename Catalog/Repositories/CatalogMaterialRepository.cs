@@ -19,21 +19,29 @@ namespace Catalog.Repositories
 
         public async Task<CatalogMaterial> AddAsync(string name)
         {
-            var material = new CatalogMaterial { Name = name }; 
+            var material = new CatalogMaterial { Name = name };
 
             await _dbContext.CatalogMaterials.AddAsync(material);
 
             _dbContext.SaveChanges();
-            
+
             return material;
         }
 
-        public async Task<ItemsList<CatalogMaterial>> GetMaterialsAsync()
+        public async Task<IEnumerable<CatalogMaterial>> GetMaterialsAsync()
         {
             var materials = await _dbContext.CatalogMaterials
                 .ToListAsync();
 
-            return new ItemsList<CatalogMaterial>() { TotalCount = materials.Count, Data = materials };
+            return materials;
+        }
+
+        public async Task<CatalogMaterial?> GetMaterial(int id)
+        {
+            var result = await _dbContext.CatalogMaterials
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            return result;
         }
 
         public async Task<CatalogMaterial?> RemoveAsync(int id)
@@ -44,7 +52,7 @@ namespace Catalog.Repositories
             {
                 return null;
             }
-            
+
             _dbContext.Remove(material);
             _dbContext.SaveChanges();
 
