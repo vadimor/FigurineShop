@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Basket.Controllers
 {
     [ApiController]
-    [Authorize(Policy = AuthPolicy.AllowEndUserPolicy)]
+    [Authorize(Policy = AuthPolicy.AllowClientPolicy)]
     [Route(ComponentDefaults.DefaultRoute)]
     public class BasketBffController : Controller
     {
@@ -14,8 +14,7 @@ namespace Basket.Controllers
         private readonly IBasketService _basketService;
 
         public BasketBffController(
-            ILogger<BasketBffController> logger, IBasketService basketService
-        )
+            ILogger<BasketBffController> logger, IBasketService basketService)
         {
             _logger = logger;
             _basketService = basketService;
@@ -26,8 +25,7 @@ namespace Basket.Controllers
         {
             _logger.LogInformation("Start add");
             var userId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
-            _logger.LogInformation($"userId: {userId}");
-            await _basketService.AddAsync(addRequest.catalogItem, addRequest.countItems, userId!);
+            await _basketService.AddAsync(addRequest.CatalogItem, addRequest.CountItems, userId!);
             Ok();
         }
 
@@ -40,6 +38,14 @@ namespace Basket.Controllers
             var response = await _basketService.GetAsync(userId!);
             _logger.LogInformation($"response get: {response}");
             return Ok(response);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Remove(RemoveRequest request)
+        {
+            var userId = User.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
+            await _basketService.RemoveAsync(request.CatalogItem, userId!);
+            return Ok();
         }
     }
 }

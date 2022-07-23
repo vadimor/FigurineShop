@@ -23,17 +23,19 @@ namespace Basket.Services
             _jsonSerializer = jsonSerializer;
         }
 
-        private IDatabase GetRedisDatabase() => _cacheConnectionService.Connection.GetDatabase();
-
-
         public async Task AddOrUpdateAsync<T>(string key, T? value)
         {
             var redis = GetRedisDatabase();
             var expiry = _config.CacheTimeout;
-
-
-
-            var serialized = _jsonSerializer.Serialize<T>(value);
+            string? serialized;
+            if (value is not null)
+            {
+                serialized = _jsonSerializer.Serialize<T>(value);
+            }
+            else
+            {
+                serialized = null;
+            }
 
             if (await redis.StringSetAsync(key, serialized, expiry))
             {
@@ -57,10 +59,11 @@ namespace Basket.Services
             var redis = GetRedisDatabase();
 
             var serialized = await redis.StringGetAsync(key);
-            
             return serialized.HasValue ?
                 _jsonSerializer.Deserialize<T>(serialized.ToString())
-                : default(T)!;
+                : default(T) !;
         }
+
+        private IDatabase GetRedisDatabase() => _cacheConnectionService.Connection.GetDatabase();
     }
 }

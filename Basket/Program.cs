@@ -1,4 +1,3 @@
-using System.Reflection;
 using Basket.Configuration;
 using Basket.Services;
 using Basket.Services.Interfaces;
@@ -11,12 +10,12 @@ var config = GetConfig();
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers(
     options =>
     {
         options.Filters.Add(typeof(HttpGlobalExceptionFilter));
     }).AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddSwaggerGen(options =>
 {

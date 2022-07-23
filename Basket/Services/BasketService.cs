@@ -24,9 +24,10 @@ namespace Basket.Services
             {
                 originalData = new BasketDataSerializedDto
                 {
-                    Data = new Dictionary<String, int>()
+                    Data = new Dictionary<string, int>()
                 };
             }
+
             var serializedItem = _jsonSerializer.Serialize(catalogItemDto);
             if (originalData.Data.ContainsKey(serializedItem))
             {
@@ -36,6 +37,22 @@ namespace Basket.Services
             {
                 originalData.Data.Add(serializedItem, countItem);
             }
+
+            await _cacheService.AddOrUpdateAsync(userId, originalData);
+        }
+
+        public async Task RemoveAsync(CatalogItemDto catalogItemDto, string userId)
+        {
+            var originalData = await _cacheService.GetAsync<BasketDataSerializedDto>(userId);
+
+            if (originalData is null)
+            {
+                return;
+            }
+
+            var serializedItem = _jsonSerializer.Serialize(catalogItemDto);
+
+            originalData.Data.Remove(serializedItem);
 
             await _cacheService.AddOrUpdateAsync(userId, originalData);
         }
