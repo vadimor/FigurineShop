@@ -9,8 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Catalog.Controllers
 {
     [ApiController]
-    [Authorize(Policy = AuthPolicy.AllowClientPolicy)]
-    [Scope("catalog.catalogsource")]
+    [Authorize(Policy = AuthPolicy.AdminPolicy)]
     [Route(ComponentDefaults.DefaultRoute)]
     public class CatalogSourceController : Controller
     {
@@ -29,7 +28,7 @@ namespace Catalog.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(ItemsListResponse<CatalogSourceDto>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IEnumerable<CatalogSourceDto>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Sources()
         {
             var result = await _catalogSourceService.GetSourcesAsync();
@@ -37,28 +36,37 @@ namespace Catalog.Controllers
         }
 
         [HttpPost]
+
+        // [AllowAnonymous]
         [ProducesResponseType(typeof(CatalogSourceDto), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Add(string name)
+        public async Task<IActionResult> GetSource(GetRequest request)
         {
-            var result = await _catalogSourceService.AddAsync(name);
+            var result = await _catalogSourceService.GetSourceAsync(request.Id);
             return Ok(result);
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(CatalogSourceDto), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Update(int id, string name)
+        public async Task<IActionResult> Add(AddRequest request)
         {
-            var result = await _catalogSourceService.UpdateAsync(id, name);
+            var result = await _catalogSourceService.AddAsync(request.Name);
             return Ok(result);
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(CatalogSourceDto), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Remove(int id)
+        public async Task<IActionResult> Update(UpdateRequest request)
         {
-            var result = await _catalogSourceService.RemoveAsync(id);
+            var result = await _catalogSourceService.UpdateAsync(request.Id, request.Name);
             return Ok(result);
         }
 
+        [HttpPost]
+        [ProducesResponseType(typeof(CatalogSourceDto), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> Remove(RemoveRequest request)
+        {
+            var result = await _catalogSourceService.RemoveAsync(request.Id);
+            return Ok(result);
+        }
     }
 }

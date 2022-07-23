@@ -9,8 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Catalog.Controllers
 {
     [ApiController]
-    [Authorize(Policy = AuthPolicy.AllowClientPolicy)]
-    [Scope("catalog.catalogmaterial")]
+    [Authorize(Policy = AuthPolicy.AdminPolicy)]
     [Route(ComponentDefaults.DefaultRoute)]
     public class CatalogMaterialController : Controller
     {
@@ -29,7 +28,7 @@ namespace Catalog.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(ItemsListResponse<CatalogMaterialDto>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IEnumerable<CatalogMaterialDto>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Materials()
         {
             var result = await _catalogMaterialService.GetMaterialsAsync();
@@ -38,27 +37,34 @@ namespace Catalog.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(CatalogMaterialDto), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Add(string name)
+        public async Task<IActionResult> GetMaterial(GetRequest request)
         {
-            var result = await _catalogMaterialService.AddAsync(name);
+            var result = await _catalogMaterialService.GetMaterialAsync(request.Id);
             return Ok(result);
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(CatalogMaterialDto), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Update(int id, string name)
+        public async Task<IActionResult> Add(AddRequest request)
         {
-            var result = await _catalogMaterialService.UpdateAsync(id, name);
+            var result = await _catalogMaterialService.AddAsync(request.Name);
             return Ok(result);
         }
 
         [HttpPost]
         [ProducesResponseType(typeof(CatalogMaterialDto), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Remove(int id)
+        public async Task<IActionResult> Update(UpdateRequest request)
         {
-            var result = await _catalogMaterialService.RemoveAsync(id);
+            var result = await _catalogMaterialService.UpdateAsync(request.Id, request.Name);
             return Ok(result);
         }
 
+        [HttpPost]
+        [ProducesResponseType(typeof(CatalogMaterialDto), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> Remove(RemoveRequest request)
+        {
+            var result = await _catalogMaterialService.RemoveAsync(request.Id);
+            return Ok(result);
+        }
     }
 }

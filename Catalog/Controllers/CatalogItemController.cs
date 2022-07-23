@@ -9,8 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Catalog.Controllers
 {
     [ApiController]
-    [Authorize(Policy = AuthPolicy.AllowClientPolicy)]
-    [Scope("catalog.catalogitem")]
+    [Authorize(Policy = AuthPolicy.AdminPolicy)]
     [Route(ComponentDefaults.DefaultRoute)]
     public class CatalogItemController : Controller
     {
@@ -29,10 +28,20 @@ namespace Catalog.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(ItemsListResponse<CatalogItemDto>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IEnumerable<CatalogItemDto>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Items()
         {
+            _logger.LogInformation("start Items");
             var result = await _catalogItemService.GetItemsAsync();
+            _logger.LogInformation($"Items count: {result.Count()}");
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(CatalogItemDto), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetItem(GetRequest request)
+        {
+            var result = await _catalogItemService.GetItemAsync(request.Id);
             return Ok(result);
         }
 
@@ -43,7 +52,7 @@ namespace Catalog.Controllers
             var result = await _catalogItemService.AddAsync(request.Name, request.Price, request.Weight, request.Size, request.CatalogMaterialId, request.CatalogSourceId, request.PictureFileName, request.AvailableStock);
             return Ok(result);
         }
-        
+
         [HttpPost]
         [ProducesResponseType(typeof(CatalogItemDto), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Update(UpdateItemRequest request)
@@ -51,14 +60,14 @@ namespace Catalog.Controllers
             var result = await _catalogItemService.UpdateAsync(request.Id, request.Name, request.Price, request.Weight, request.Size, request.CatalogMaterialId, request.CatalogSourceId, request.PictureFileName, request.AvailableStock);
             return Ok(result);
         }
-        
+
         [HttpPost]
         [ProducesResponseType(typeof(CatalogItemDto), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> Remove(int id)
+        public async Task<IActionResult> Remove(RemoveRequest request)
         {
-            var result = await _catalogItemService.RemoveAsync(id);
+            _logger.LogInformation($"Remove item id:{request.Id}");
+            var result = await _catalogItemService.RemoveAsync(request.Id);
             return Ok(result);
         }
-
     }
 }

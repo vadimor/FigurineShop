@@ -4,13 +4,13 @@ using Catalog.Models.Enums;
 using Catalog.Models.Requests;
 using Catalog.Models.Response;
 using Catalog.Services.Interfaces;
+
 // using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Catalog.Controllers;
 
-//[Authorize(Policy = AuthPolicy.AllowClientPolicy)]
-
+// [Authorize(Policy = AuthPolicy.AllowClientPolicy)]
 [ApiController]
 [Route(ComponentDefaults.DefaultRoute)]
 public class CatalogBffController : ControllerBase
@@ -39,22 +39,22 @@ public class CatalogBffController : ControllerBase
     }
 
     [HttpPost]
+
     // [AllowAnonymous]
     [ProducesResponseType(typeof(CatalogItemDto), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetItem(GetItemRequest request)
+    public async Task<IActionResult> GetItem(GetRequest request)
     {
-        _logger.LogInformation($"Start Get Item {request.Id}");
         var result = await _catalogItemService.GetItemAsync(request.Id);
-        _logger.LogInformation($"End Get Item {result.Name}");
         return Ok(result);
     }
 
     [HttpPost]
+
     // [AllowAnonymous]
     [ProducesResponseType(typeof(PaginatedItemsResponse<CatalogItemDto>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> Items(PaginatedItemsRequest<CatalogTypeFilter> request)
+    public async Task<IActionResult> Items(PaginatedItemsRequest<CatalogTypeFilter, CatalogTypeSorting> request)
     {
-        var result = await _catalogService.GetCatalogItemsAsync(request.PageSize, request.PageIndex, request.Filters);
+        var result = await _catalogService.GetCatalogItemsAsync(request.PageSize, request.PageIndex, request.Filters, request.Sorting);
         return Ok(result);
     }
 
@@ -64,7 +64,12 @@ public class CatalogBffController : ControllerBase
     [ProducesResponseType(typeof(ItemsListResponse<CatalogMaterialDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetMaterials()
     {
-        var result = await _catalogMaterialService.GetMaterialsAsync();
+        var list = await _catalogMaterialService.GetMaterialsAsync();
+        var result = new ItemsListResponse<CatalogMaterialDto>
+        {
+            Data = list,
+            Count = list.Count()
+        };
         return Ok(result);
     }
 
@@ -74,7 +79,12 @@ public class CatalogBffController : ControllerBase
     [ProducesResponseType(typeof(ItemsListResponse<CatalogSourceDto>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> GetSources()
     {
-        var result = await _catalogSourceService.GetSourcesAsync();
+        var list = await _catalogSourceService.GetSourcesAsync();
+        var result = new ItemsListResponse<CatalogSourceDto>
+        {
+            Data = list,
+            Count = list.Count()
+        };
         return Ok(result);
     }
 }
