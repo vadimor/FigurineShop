@@ -29,6 +29,7 @@ builder.Services.AddAuthentication(options =>
     .AddCookie(setup => setup.ExpireTimeSpan = TimeSpan.FromMinutes(sessionCookieLifetime))
     .AddOpenIdConnect(options =>
     {
+        options.GetClaimsFromUserInfoEndpoint = true;
         options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.Authority = identityUrl;
         options.Events.OnRedirectToIdentityProvider = async n =>
@@ -41,12 +42,16 @@ builder.Services.AddAuthentication(options =>
         options.ClientSecret = "secret";
         options.ResponseType = "code";
         options.SaveTokens = true;
-        options.GetClaimsFromUserInfoEndpoint = true;
         options.RequireHttpsMetadata = false;
         options.UsePkce = true;
         options.Scope.Add("openid");
         options.Scope.Add("profile");
         options.Scope.Add("mvc");
+        options.Scope.Add("roleidentity");
+        options.Scope.Add("basket");
+        options.Scope.Add("commentbff");
+        options.Scope.Add("catalog.admin");
+        options.ClaimActions.MapUniqueJsonKey("role", "role");
     });
 
 builder.Services.AddAuthorization(config);
@@ -57,9 +62,11 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddTransient<IHttpClientService, HttpClientService>();
 builder.Services.AddTransient<ICatalogService, CatalogService>();
+builder.Services.AddTransient<IAdminCatalogService, AdminCatalogService>();
 builder.Services.AddTransient<IIdentityParser<ApplicationUser>, IdentityParser>();
 builder.Services.AddTransient<IJsonSerializer, Infrastructure.Services.JsonSerializer>();
 builder.Services.AddTransient<IBasketService, BasketService>();
+builder.Services.AddTransient<ICommentService, CommentService>();
 
 var app = builder.Build();
 
