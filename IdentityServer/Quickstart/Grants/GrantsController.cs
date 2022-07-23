@@ -1,21 +1,20 @@
 // Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace IdentityServer4.Quickstart.UI
 {
     /// <summary>
-    /// This sample controller allows a user to revoke grants given to clients
+    /// This sample controller allows a user to revoke grants given to clients.
     /// </summary>
     [SecurityHeaders]
     [Authorize]
@@ -26,7 +25,8 @@ namespace IdentityServer4.Quickstart.UI
         private readonly IResourceStore _resources;
         private readonly IEventService _events;
 
-        public GrantsController(IIdentityServerInteractionService interaction,
+        public GrantsController(
+            IIdentityServerInteractionService interaction,
             IClientStore clients,
             IResourceStore resources,
             IEventService events)
@@ -38,8 +38,9 @@ namespace IdentityServer4.Quickstart.UI
         }
 
         /// <summary>
-        /// Show list of grants
+        /// Show list of grants.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -47,11 +48,14 @@ namespace IdentityServer4.Quickstart.UI
         }
 
         /// <summary>
-        /// Handle postback to revoke a client
+        /// Handle postback to revoke a client.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
+#pragma warning disable SA1611 // Element parameters should be documented
         public async Task<IActionResult> Revoke(string clientId)
+#pragma warning restore SA1611 // Element parameters should be documented
         {
             await _interaction.RevokeUserConsentAsync(clientId);
             await _events.RaiseAsync(new GrantsRevokedEvent(User.GetSubjectId(), clientId));
